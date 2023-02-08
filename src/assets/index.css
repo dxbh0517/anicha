@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --primary: #733fcc;
+    --secondary: #6419E6;
+}
+
+.router-link-active:is(.colorIt) {
+    color: var(--primary) !important;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+}
+
+.line-in-middle {
+    width:2px;
+    height: 75vh;
+    background: linear-gradient(to top,
+    transparent 2%,
+    var(--primary) calc(50% - 0.8px),
+    var(--primary) calc(50% + 0.8px),
+    transparent 98%);
+}
+
+@media only screen and (max-width: 600px) {
+    .line-in-middle {
+        width:75vw;
+        height: 2px;
+        background: linear-gradient(to right,
+        transparent 2%,
+        var(--primary) calc(50% - 0.8px),
+        var(--primary) calc(50% + 0.8px),
+        transparent 98%);
+    }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #2A303C inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
