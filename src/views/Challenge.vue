@@ -748,10 +748,11 @@
               <div class="relative">
                 <select class="select select-primary w-full max-w-xs text-primary-content border-2 border-primary"
                         v-model="airing" required >
-                  <option>Airing</option>
-                  <option>Finished</option>
-                  <option>Not yet Aired</option>
-                  <option>Cancelled</option>
+                  <option value="RELEASING">Airing</option>
+                  <option value="FINISHED">Finished</option>
+                  <option value="NOT_YET_RELEASED">Not yet Aired</option>
+                  <option value="CANCELLED">Cancelled</option>
+                  <option value="HIATUS">Hiatus</option>
                 </select>
 
                 <label for="airing" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-100 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
@@ -900,7 +901,7 @@
 
       <div class="modal-action border-t-2 border-t-primary pt-4">
         <div class="flex justify-between w-full">
-          <a href="#" class="btn btn-outline btn-error">Close</a>
+          <a href="#" class="btn btn-outline btn-error" @click="cancelSearch()">Close</a>
         </div>
       </div>
     </div>
@@ -1429,8 +1430,6 @@ export default {
       const type = []
       const notes = []
 
-      console.log(this.requirements)
-
       for (let i = 0; i < this.requirements.length; i++) {
         position[i] = parseInt(this.requirements[i][5])
         numbers[i] = this.requirements[i][0]
@@ -1590,12 +1589,16 @@ export default {
         let genres = [];
         let format = [];
         let communityList = []
-        this.search.season = []
-        this.search.year = []
-        this.search.score = []
-        this.search.episode = []
-        this.search.format = []
-        this.search.airing = []
+        this.search.text = []
+        this.search.genres = [];
+        this.search.tags = [];
+        this.search.year = [];
+        this.search.season = [];
+        this.search.format = [];
+        this.search.airing = [];
+
+        this.search.showList = true;
+        this.search.showPlanning = true
 
         if (output !== null) {
           output = output.map(text => text.replace(/"/g, ''));
@@ -1663,7 +1666,7 @@ export default {
       }
 
       if (!this.search.year.includes(this.year) && this.year !== "") {
-        this.search.year.push(this.year);
+        this.search.year = [this.year];
       }
 
       if (!this.search.season.includes(this.season) && this.season !== "") {
@@ -1685,7 +1688,6 @@ export default {
       this.searchQuery(this.pageNum)
     },
     async searchQuery(num) {
-      console.log(this.search)
       let media = "(";
 
       if (this.search.text.length === 1) {
@@ -1726,17 +1728,22 @@ export default {
       }
 
       if (this.search.airing.length > 0) {
-        let airing = '"' + this.search.airing[0] + '"';
+        let airing = this.search.airing[0];
         for (let i = 1; i < this.search.airing.length; i++) {
-          airing = airing + ', "' + this.search.airing[i] +'"'
+          airing = airing + ', ' + this.search.airing[i]
         }
 
         media = media + ", status_in: [" + airing + "]"
       }
 
+      if (this.search.year.length > 0) {
+        let num = parseInt(this.search.year[0])
+        num = num += 1
+        media = media + ', startDate_greater: ' + this.search.year[0] + '0000 , startDate_lesser: ' + num + '0000'
+      }
+
       media = media + ', onList: true, sort: POPULARITY_DESC)'
 
-      console.log(media)
 
       const query = `
         query ($pageNum: Int) {
@@ -1807,12 +1814,18 @@ export default {
                   this.searchResult.push(result.data.Page.media[i])
                 }
               }
+            } else if (!this.search.showPlanning) {
+              for (let i = 0; i < result.data.Page.media.length; i++) {
+                for (let j = 0; j < this.searchResult.length; j++) {
+                  if (this.searchResult[j].id === result.data.Page.media[i].id) {
+                    return;
+                  }
+                }
+                this.searchResult.push(result.data.Page.media[i])
+              }
             }
           })
           .catch(handleError);
-
-      console.log(this.searchResult)
-      console.log(this.searchResult.length)
 
       // eslint-disable-next-line no-inner-declarations
       function handleResponse(response) {
@@ -1834,6 +1847,29 @@ export default {
       } else {
         this.url = url
       }
+
+      this.searchText = "";
+      this.genres = "";
+      this.tags = "";
+      this.year = "";
+      this.season = "";
+      this.format = "";
+      this.airing = "";
+
+      this.showList = true;
+      this.showPlanning = true
+    },
+    cancelSearch() {
+      this.searchText = "";
+      this.genres = "";
+      this.tags = "";
+      this.year = "";
+      this.season = "";
+      this.format = "";
+      this.airing = "";
+
+      this.showList = true;
+      this.showPlanning = true
     }
   },
   mounted() {
