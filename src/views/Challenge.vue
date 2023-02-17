@@ -790,7 +790,9 @@
                 <div class="flex flex-nowrap gap-1 bg-primary text-primary-content text-xs
                 font-medium mr-2 px-2.5 py-0.5 rounded-full group items-center hover:bg-error hover:cursor-pointer ">
                   {{ tags }}
-                  <i class="fa-sharp fa-solid fa-xmark hidden group-hover:flex"></i>
+                  <button @click="deleteSearch(tags)">
+                    <i class="fa-sharp fa-solid fa-xmark hidden group-hover:flex"></i>
+                  </button>
                 </div>
               </template>
             </template>
@@ -1684,6 +1686,17 @@ export default {
       this.search.showList = this.showList;
       this.search.showPlanning = this.showPlanning
 
+      this.searchText = "";
+      this.genres = "";
+      this.tags = "";
+      this.year = "";
+      this.season = "";
+      this.format = "";
+      this.airing = "";
+
+      this.showList = true;
+      this.showPlanning = true
+
       this.pageNum = 1
       this.searchQuery(this.pageNum)
     },
@@ -1870,6 +1883,15 @@ export default {
 
       this.showList = true;
       this.showPlanning = true
+    },
+    async deleteSearch(tag) {
+      for (let x in this.search) {
+        if (await Array.isArray(this.search[x]) ? this.search[x].includes(tag) : false) {
+          this.search[x] = this.search[x].filter(item => item !== tag)
+        }
+      }
+
+      this.searchFields()
     }
   },
   mounted() {
