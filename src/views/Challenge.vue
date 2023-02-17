@@ -1691,7 +1691,7 @@ export default {
       let media = "(";
 
       if (this.search.text.length === 1) {
-        media = media + "search: " + this.search.text[0]
+        media = media + 'search: "' + this.search.text[0] + '"'
       } else {
         media = media + "search: null"
       }
