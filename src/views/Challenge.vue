@@ -624,7 +624,7 @@
           </template>
 
           <template v-if="extra!==''">
-            <div class="">
+            <div>
               &lt;hr&gt;
               <br>
               {{ extra }}
@@ -1165,7 +1165,23 @@ export default {
         fetch(url, options).then(handleResponse)
             .then((result) => {
               for (let j = 0; j < result.data.Page.mediaList.length; j++) {
-                this.list.push(result.data.Page.mediaList[j])
+                this.list.push(result.data.Page.mediaList[j]);
+
+                if (this.list[j].completedAt.day !== null) {
+                  this.list[j].completedAt.day = this.pad(this.list[j].completedAt.day, 2);
+                }
+
+                if (this.list[j].completedAt.month !== null) {
+                  this.list[j].completedAt.month = this.pad(this.list[j].completedAt.month, 2);
+                }
+
+                if (this.list[j].startedAt.day !== null) {
+                  this.list[j].startedAt.day = this.pad(this.list[j].startedAt.day, 2);
+                }
+
+                if (this.list[j].startedAt.month !== null) {
+                  this.list[j].startedAt.month = this.pad(this.list[j].startedAt.month, 2);
+                }
               }
             })
             .catch(handleError);
