@@ -229,6 +229,11 @@ export default {
                         episodes
                         chapters
                     }
+                    completedAt {
+                      year
+                      month
+                      day
+                    }
                 }
             }
         }
@@ -274,6 +279,7 @@ export default {
     updateProgress() {
       let challengeProgress;
       let challengeTotal;
+      let list = [];
 
       for (let i = 0; i < this.challengeList.length; i ++) {
 
@@ -283,6 +289,7 @@ export default {
         for (let j = 0; j < this.challengeList[i].fulfilments.length; j++) {
           for (let k = 0; k < this.progressList.length; k++) {
             if (this.progressList[k].mediaId == this.challengeList[i].fulfilments[j]) {
+              list.push(this.progressList[k])
               challengeTotal++;
               if (this.progressList[k].status === "COMPLETED") {
                 challengeProgress++
@@ -303,10 +310,28 @@ export default {
           const result = Math.round((challengeProgress / challengeTotal) * 100);
 
           const ref = doc(db, 'challenges', this.challengeIdList[i]);
-          let date = new Date();
-          date = date.getFullYear() + "-" + date.getUTCMonth()+1 + "-" + date.getUTCDate()
 
           if (result === 100) {
+            let latestDate = list[0].completedAt;
+
+            for (let i = 1; i < list.length; i++) {
+              let currentDate = list[i].completedAt;
+
+              if (currentDate.year > latestDate.year) {
+                latestDate = currentDate;
+              } else if (currentDate.year === latestDate.year) {
+                if (currentDate.month > latestDate.month) {
+                  latestDate = currentDate;
+                } else if (currentDate.month === latestDate.month) {
+                  if (currentDate.day > latestDate.day) {
+                    latestDate = currentDate;
+                  }
+                }
+              }
+            }
+
+            let date = latestDate.year + "-" + this.pad(latestDate.month, 2) + "-" + this.pad(latestDate.day, 2)
+
             updateDoc(ref, {
               progress: result,
               status: "Completed",
@@ -319,6 +344,11 @@ export default {
           }
         }
       }
+    },
+    pad(num, size) {
+      let s = num + "";
+      while (s.length < size) s = "0" + s;
+      return s;
     },
     refresh() {
       setTimeout(this.getUser(), 200)

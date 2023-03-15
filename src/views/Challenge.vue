@@ -126,7 +126,7 @@
         <div>
           <div class="w-full border-t-2 border-t-primary flex justify-between">
             <div>
-              <a href="#code-modal" class="btn btn-outline btn-primary m-4" type="button">
+              <a href="#code-modal" class="btn btn-outline btn-primary m-4" type="button" @click="getCode()">
                 Code
               </a>
 
@@ -290,7 +290,7 @@
           <div class="form-control my-4 mx-2 flex-auto">
             <div class="relative">
               <textarea id="extra" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                     placeholder=" " name="extra" v-model="extraInput"/>
+                        placeholder=" " name="extra" v-model="extraInput"/>
 
               <label for="requirement" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-100 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
                 Requirement
@@ -328,7 +328,7 @@
           <div class="form-control my-4 mx-2 flex-auto">
             <div class="relative">
               <input type="text" id="dividerText" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                        placeholder=" " name="dividerText" v-model="dividerText"/>
+                     placeholder=" " name="dividerText" v-model="dividerText"/>
 
               <label for="requirement" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-100 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
                 Divider label
@@ -353,31 +353,30 @@
   <div class="container mx-auto my-8 p-4 rounded-lg bg-base-200">
     <template v-for="(entry, index) in requirements" v-bind:key="entry">
       <template v-if="entry[3] !== 'divider'">
-        <div class="border-2 border-primary rounded-lg my-4 group">
-          <div :id="index" class="p-4 flex">
-            <div class="flex border-r-2 border-r-primary px-2 items-center">
-              <p class="text-lg font-bold text-primary">
-                {{ entry[0] }}
-              </p>
-            </div>
+        <template v-for="item in list" v-bind:key="item">
+          <template v-if="item.mediaId == entry[2]">
+            <div class="border-2 border-primary rounded-lg my-4 group bg-gradient-to-r via-base-200" :class="{ 'from-primary ': item.status === 'COMPLETED', 'from-[#3db4f2] ': item.status === 'CURRENT', 'from-[#f79a63] ': item.status === 'PLANNING' }">
+              <div :id="index" class="p-4 flex">
+                <div class="flex border-r-2 border-r-primary-content px-2 items-center">
+                  <p class="text-lg font-bold text-primary-content">
+                    {{ entry[0] }}
+                  </p>
+                </div>
 
-            <div class="flex-none px-4">
-              <template v-for="item in list" v-bind:key="item">
-                <template v-if="item.mediaId == entry[2]">
+                <div class="flex-none px-4">
+
                   <div class="flex items-center min-h-full">
                     <a :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
                       <img :src="item.media.coverImage.extraLarge" class="h-32">
                     </a>
                   </div>
-                </template>
-              </template>
-            </div>
 
-            <div class="grid grid-rows-2 p-4 grow items-center">
-              <div>
-                <a class="capitalize text-2xl font-semibold hover:text-primary" :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
-                  <template v-for="item in list">
-                    <template v-if="item.mediaId == entry[2]">
+                </div>
+
+                <div class="grid grid-rows-2 p-4 grow items-center">
+                  <div>
+                    <a class="capitalize text-2xl font-semibold hover:text-primary" :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
+
                       <template v-if="item.media.title.english">
                         {{ item.media.title.english }}
                       </template>
@@ -385,153 +384,123 @@
                         {{ item.media.title.romaji }}
                       </template>
 
-                    </template>
-                  </template>
-                </a>
+
+                    </a>
+                  </div>
+                  <p>
+                    {{ entry[1] }}
+                  </p>
+                </div>
+
+                <div class="flex items-center px-4 hidden group-hover:flex">
+                  <button class="btn btn-outline btn-primary mx-2" @click="editRequirement(index)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+
+                  <button class="btn btn-outline btn-error mx-2" @click="deleteEntry(index)">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
               </div>
-              <p>
-                {{ entry[1] }}
-              </p>
             </div>
 
-            <div class="flex px-4 items-center">
-              <template v-for="item in list" v-bind:key="item">
-                <template v-if="item.mediaId == entry[2]">
-                  <template v-if="item.status === 'PLANNING'">
-                    <div class="badge badge-primary">
-                      <p class="capitalize">{{ item.status.toLowerCase() }}</p>
-                    </div>
-                  </template>
-
-                  <template v-else-if="item.status === 'CURRENT'">
-                    <div class="badge badge-accent">
-                      <p class="capitalize">{{ item.status.toLowerCase() }}</p>
-                    </div>
-                  </template>
-
-                  <template v-else-if="item.status === 'COMPLETED'">
-                    <div class="badge badge-success">
-                      <p class="capitalize">{{ item.status.toLowerCase() }}</p>
-                    </div>
-                  </template>
-
-                  <template v-else>
-                    <div class="badge badge-error">
-                      <p class="capitalize">{{ item.status.toLowerCase() }}</p>
-                    </div>
-                  </template>
-
-                </template>
-              </template>
-            </div>
-
-            <div class="flex items-center px-4 hidden group-hover:flex">
-              <button class="btn btn-outline btn-primary mx-2" @click="editRequirement(index)">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-
-              <button class="btn btn-outline btn-error mx-2" @click="deleteEntry(index)">
-                <i class="fa-solid fa-trash"></i>
-              </button>
-            </div>
-          </div>
-
-          <div :id="index + 'edit'" class="hidden p-4">
-            <form action="#" @submit.prevent="submitEdit(index)">
-              <div class="flex w-full flex-wrap">
-                <div class="form-control my-4 mx-2 w-40 flex-grow">
-                  <div class="relative">
-                    <input type="text" :id="'position(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                           placeholder=" " name="position" value />
-
-                    <label for="position" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                      Position
-                    </label>
-                  </div>
-                </div>
-
-                <div class="form-control my-4 mx-2 w-40 flex-grow">
-                  <div class="relative">
-                    <input type="text" :id="'number(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                           placeholder=" " name="number" value />
-
-                    <label for="number" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                      Number
-                    </label>
-                  </div>
-                </div>
-
-                <div class="form-control my-4 mx-2 w-60 flex-auto">
-                  <div class="relative">
-                    <input type="text" :id="'requirement(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                           placeholder=" " name="requirement" value />
-
-                    <label for="requirement" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                      Requirement
-                    </label>
-                  </div>
-                </div>
-
-                <div class="form-control my-4 mx-2 w-80 flex flex-grow flex-row">
-                  <div class="relative flex-grow">
-                    <input type="url" :id="'url(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                           placeholder=" " name="url" value />
-
-                    <label for="url" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                      URL
-                    </label>
-                  </div>
-
-
-                  <a href="#search-modal" class="btn btn-outline btn-primary mx-2 border-2" type="button" @click="searchCheck(index)">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                  </a>
-                </div>
-
-                <div class="form-control my-4 mx-2 w-60 flex-auto">
-                  <div class="relative">
-                    <input type="text" :id="'note(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
-                           placeholder=" " name="note" value />
-
-                    <label for="note" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
-                      Notes
-                    </label>
-                  </div>
-                </div>
-
-                <div class="form-control my-4 mx-2 w-60 flex-row">
-                  <div class="form-control my-4 mx-2 w-40">
+            <div :id="index + 'edit'" class="border-2 border-primary rounded-lg my-4 hidden p-4">
+              <form action="#" @submit.prevent="submitEdit(index)">
+                <div class="flex w-full flex-wrap">
+                  <div class="form-control my-4 mx-2 w-40 flex-grow">
                     <div class="relative">
-                      <label class="label cursor-pointer font-bold">
-                        <span class="label-text">Anime</span>
-                        <input type="radio" name="radio-type" class="radio radio-primary bg-base-200" value="ANIME" :id="'anime(' + index + ')'"/>
+                      <input type="text" :id="'position(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
+                             placeholder=" " name="position" value />
+
+                      <label for="position" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                        Position
                       </label>
                     </div>
                   </div>
 
-                  <div class="form-control my-4 mx-2 w-40">
+                  <div class="form-control my-4 mx-2 w-40 flex-grow">
                     <div class="relative">
-                      <label class="label cursor-pointer font-bold">
-                        <span class="label-text">Manga</span>
-                        <input type="radio" name="radio-type" class="radio radio-primary bg-base-200 checked:bg-primary" value="MANGA" :id="'manga(' + index + ')'"/>
+                      <input type="text" :id="'number(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
+                             placeholder=" " name="number" value />
+
+                      <label for="number" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                        Number
                       </label>
                     </div>
                   </div>
+
+                  <div class="form-control my-4 mx-2 w-60 flex-auto">
+                    <div class="relative">
+                      <input type="text" :id="'requirement(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
+                             placeholder=" " name="requirement" value />
+
+                      <label for="requirement" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                        Requirement
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-control my-4 mx-2 w-80 flex flex-grow flex-row">
+                    <div class="relative flex-grow">
+                      <input type="url" :id="'url(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
+                             placeholder=" " name="url" value />
+
+                      <label for="url" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                        URL
+                      </label>
+                    </div>
+
+
+                    <a href="#search-modal" class="btn btn-outline btn-primary mx-2 border-2" type="button" @click="searchCheck(index)">
+                      <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+                  </div>
+
+                  <div class="form-control my-4 mx-2 w-60 flex-auto">
+                    <div class="relative">
+                      <input type="text" :id="'note(' + index + ')'" class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-primary-content font-bold disabled:text-grey-500 bg-transparent rounded-lg border-2 border-primary disabled:border-gray-500 appearance-none focus:input-accent focus:ring-0 peer"
+                             placeholder=" " name="note" value />
+
+                      <label for="note" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-200 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                        Notes
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="form-control my-4 mx-2 w-60 flex-row">
+                    <div class="form-control my-4 mx-2 w-40">
+                      <div class="relative">
+                        <label class="label cursor-pointer font-bold">
+                          <span class="label-text">Anime</span>
+                          <input type="radio" name="radio-type" class="radio radio-primary bg-base-200" value="ANIME" :id="'anime(' + index + ')'"/>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="form-control my-4 mx-2 w-40">
+                      <div class="relative">
+                        <label class="label cursor-pointer font-bold">
+                          <span class="label-text">Manga</span>
+                          <input type="radio" name="radio-type" class="radio radio-primary bg-base-200 checked:bg-primary" value="MANGA" :id="'manga(' + index + ')'"/>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div class="flex justify-between">
-                <button class="btn btn-outline btn-error mx-4" @click="cancelEdit(index)" type="button">
-                  Cancel
-                </button>
+                <div class="flex justify-between">
+                  <button class="btn btn-outline btn-error mx-4" @click="cancelEdit(index)" type="button">
+                    Cancel
+                  </button>
 
-                <button class="btn btn-outline btn-primary mx-4" type="submit">
-                  <i class="fa-solid fa-file-circle-check"></i> &nbsp;&nbsp; Update
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+                  <button class="btn btn-outline btn-primary mx-4" type="submit">
+                    <i class="fa-solid fa-file-circle-check"></i> &nbsp;&nbsp; Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </template>
+        </template>
       </template>
 
       <template v-if="entry[3] === 'divider'">
@@ -578,73 +547,19 @@
 
   <div class="modal" id="code-modal">
     <div class="modal-box max-w-4xl md:h-auto">
+
       <div class="p-6 space-y-4" ref="challengeCode">
-        <div class="text-base leading-relaxed text-gray-400 text-center max-h-96 overflow-y-auto">
-          <p>
-            ~~~
-          </p>
-          <div v-html="header"></div>
-
-          <template v-for="(entry) in requirements" v-bind:key="entry">
-            <template v-if="entry[3] !== 'divider'">
-              <template v-for="item in list" v-bind:key="item">
-                <template v-if="item.mediaId == entry[2]">
-                  {{ pad(entry[0], 2) }}) [<template v-if="item.status==='COMPLETED'">✓</template><template v-if="item.status!=='COMPLETED'">✗</template>] __{{ entry[1] }}__ <br>
-                  https://anilist.co/{{ entry[3].toLowerCase() }}/{{ entry[2] }} <br>
-
-                  <template v-if="item.startedAt.month != null">
-                    Start: {{ item.startedAt.year }}-{{ pad(item.startedAt.month, 2) }}-{{ item.startedAt.day }}
-                  </template>
-
-                  <template v-if="item.startedAt.month == null">
-                    Start: YYYY-MM-DD
-                  </template>
-
-                  <template v-if="item.completedAt.month != null">
-                    Finish: {{ item.completedAt.year }}-{{ pad(item.completedAt.month, 2) }}-{{ item.completedAt.day }}
-                  </template>
-
-                  <template v-if="item.completedAt.month == null">
-                    Finish: YYYY-MM-DD
-                  </template>
-                </template>
-              </template>
-
-              <template v-if="entry[4] !== ''">
-                // {{ entry[4] }}
-              </template>
-            </template>
-
-            <template v-if="entry[3] === 'divider'">
-              ### __{{ entry[1] }}__
-            </template>
-
-            <br>
-            <br>
-          </template>
-
-          <template v-if="extra!==''">
-            <div>
-              &lt;hr&gt;
-              <br>
-              {{ extra }}
-            </div>
-          </template>
-
-          {{ footer }}
-
-          <p>
-            ~~~
-          </p>
+        <div class="text-base leading-relaxed text-gray-400 text-center max-h-96 overflow-y-auto whitespace-pre-line p-3">
+          <p>{{ code }}</p>
         </div>
       </div>
 
       <div class="modal-action border-t-2 border-t-primary pt-4">
         <div class="flex justify-between w-full">
           <a href="#" class="btn btn-outline btn-error">Close</a>
-<!--          <button class="btn btn-outline btn-primary" @click="copy">
+          <button class="btn btn-outline btn-primary" @click="copy">
             Copy
-          </button>-->
+          </button>
         </div>
       </div>
     </div>
@@ -749,7 +664,7 @@
                 <select class="select select-primary w-full max-w-xs text-primary-content border-2 border-primary"
                         v-model="airing" required >
                   <option value="RELEASING">Airing</option>
-                  <option value="FINISHED">Finished</option>
+                  <option value="FINISHED" selected>Finished</option>
                   <option value="NOT_YET_RELEASED">Not yet Aired</option>
                   <option value="CANCELLED">Cancelled</option>
                   <option value="HIATUS">Hiatus</option>
@@ -757,6 +672,20 @@
 
                 <label for="airing" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-100 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
                   Airing Status
+                </label>
+              </div>
+            </div>
+
+            <div class="form-control my-4 mx-2 w-48">
+              <div class="relative">
+                <select class="select select-primary w-full max-w-xs text-primary-content border-2 border-primary"
+                        v-model="searchType" required >
+                  <option value="ANIME">Anime</option>
+                  <option value="MANGA">Manga</option>
+                </select>
+
+                <label for="airing" class="absolute text-sm text-primary disabled:text-grey-500 font-bold duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-base-100 px-2 peer-focus:px-2 peer-focus:text-accent peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+                  Type
                 </label>
               </div>
             </div>
@@ -876,7 +805,7 @@
                   </a>
 
                   <a class="w-full btn btn-primary" href="#"
-                          @click="addUrl('https://anilist.co/' + results.type.toLowerCase() + '/' + results.id)">
+                     @click="addUrl('https://anilist.co/' + results.type.toLowerCase() + '/' + results.id)">
                     Add
                   </a>
                 </div>
@@ -968,12 +897,14 @@ export default {
       season: "",
       format: "",
       airing: "",
+      searchType: "ANIME",
       showList: true,
       showPlanning: true,
       searchResult: [],
       pageNum: 1,
       tempVal: "",
       searchEnd: false,
+      code: "",
     }
   },
   methods: {
@@ -992,8 +923,7 @@ export default {
 
           this.anilistUsername = querySnapshot.docs[0].data().username;
           this.anilistAuth = querySnapshot.docs[0].data().anilistAuth;
-          this.header = querySnapshot.docs[0].data().header;
-          this.header = this.header.replace("<hr>", "&lt;hr&gt;")
+          this.header = querySnapshot.docs[0].data().header.toString();
           this.footer = querySnapshot.docs[0].data().footer;
 
           await this.getChallenge();
@@ -1339,10 +1269,34 @@ export default {
 
         const ref = doc(db, 'challenges', this.id);
 
+        let date;
+        let latestDate;
+
         if (result === 100) {
+          latestDate = this.list[0].completedAt;
+
+          for (let i = 1; i < this.list.length; i++) {
+            let currentDate = this.list[i].completedAt;
+
+            if (currentDate.year > latestDate.year) {
+              latestDate = currentDate;
+            } else if (currentDate.year === latestDate.year) {
+              if (currentDate.month > latestDate.month) {
+                latestDate = currentDate;
+              } else if (currentDate.month === latestDate.month) {
+                if (currentDate.day > latestDate.day) {
+                  latestDate = currentDate;
+                }
+              }
+            }
+          }
+
+          date = latestDate.year + "-" + this.pad(latestDate.month, 2) + "-" + this.pad(latestDate.day, 2)
+
           updateDoc(ref, {
             progress: result,
-            status: "Completed"
+            status: "Completed",
+            endDate: date
           });
         } else {
           updateDoc(ref, {
@@ -1382,9 +1336,7 @@ export default {
       this.options = !this.options
     },
     async copy() {
-      /*const storage = document.createElement('textarea');
-      storage.value = this.$refs.challengeCode.textContent;
-      await navigator.clipboard.writeText(storage.value);*/
+      await navigator.clipboard.writeText(this.code);
     },
     editRequirement(index) {
       const url = 'https://anilist.co/' + this.requirements[index][3].toLowerCase() + '/' + this.requirements[index][2]
@@ -1725,6 +1677,8 @@ export default {
         media = media + "search: null"
       }
 
+      media = media + ", type: " + this.searchType.toUpperCase()
+
       if (this.search.genres.length > 0) {
         let genres = '"' + this.search.genres[0] + '"';
         for (let i = 1; i < this.search.genres.length; i++) {
@@ -1908,7 +1862,63 @@ export default {
       }
 
       this.searchFields()
-    }
+    },
+    getCode() {
+      this.code = "~~~ \n"
+
+      this.header = this.header.replaceAll("<br>", "\n")
+      this.code = this.code + this.header + "\n"
+
+      for (let i = 0; i < this.requirements.length; i++) {
+        if (this.requirements[i][3] !== 'divider') {
+          for (let j = 0; j < this.list.length; j++) {
+            if (this.list[j].mediaId ===  parseInt(this.requirements[i][2])) {
+              this.code = this.code + this.pad(this.requirements[i][0])
+                  + ") ["
+              if (this.list[j].status === 'COMPLETED') {
+                this.code = this.code + "✓"
+              } else {
+                this.code = this.code + "✗"
+              }
+
+              this.code = this.code + "] __" + this.requirements[i][1]
+                  + "__\nhttps://anilist.co/" + this.requirements[i][3].toLowerCase()
+                  + "/" + this.requirements[i][2] + "\nStart: "
+
+              if (this.list[j].startedAt.month !== null) {
+                this.code = this.code + this.list[j].startedAt.year + "-" + this.pad(this.list[j].startedAt.month, 2) + "-" + this.pad(this.list[j].startedAt.day, 2)
+              } else {
+                this.code = this.code + "YYYY-MM-DD"
+              }
+
+              if (this.list[j].completedAt.month !== null) {
+                this.code = this.code + " Finish: " + this.list[j].completedAt.year + "-" + this.pad(this.list[j].completedAt.month, 2) + "-" + this.pad(this.list[j].completedAt.day, 2)
+              } else {
+                this.code = this.code + " Finish: YYYY-MM-DD"
+              }
+
+              if (this.requirements[i][4] !== '') {
+                this.code = this.code + "// " + this.requirements[i][4] + "\n"
+              }
+
+              this.code = this.code + "\n\n"
+            }
+          }
+        } else {
+          this.code = this.code + "### __" + this.requirements[i][1] + "__ \n"
+        }
+      }
+
+      if (this.extra !== null) {
+        this.code = this.code + "<hr>\n" + this.extra + "\n"
+      }
+
+      if (this.footer !== '') {
+        this.code = this.code + this.footer + "\n"
+      }
+
+      this.code = this.code + "~~~"
+    },
   },
   mounted() {
     this.getUser();
