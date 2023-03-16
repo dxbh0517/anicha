@@ -1,10 +1,15 @@
 <template>
   <div class=" mx-auto">
-    <section class="bg-base-100 flex items-center" style="height: 90vh">
+    <section class="bg-base-100 flex items-center my-48">
       <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
-        <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none  md:text-5xl lg:text-6xl text-primary">
-          Anicha
-        </h1>
+        <div class="indicator">
+          <span class="indicator-item badge badge-primary">
+            Currently in Alpha
+          </span>
+          <h1 class="my-4 text-4xl font-extrabold tracking-tight leading-none  md:text-5xl lg:text-6xl text-primary">
+            Anicha
+          </h1>
+        </div>
         <p class="mb-8 text-lg font-normal lg:text-xl sm:px-16 xl:px-48 text-gray-400">
           your AWC challenge tracker
         </p>
