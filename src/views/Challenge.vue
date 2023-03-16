@@ -367,7 +367,7 @@
 
                   <div class="flex items-center min-h-full">
                     <a :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
-                      <img :src="item.media.coverImage.extraLarge" class="h-32">
+                      <img :src="item.media.coverImage.extraLarge" class="h-32 rounded-lg">
                     </a>
                   </div>
 
@@ -375,16 +375,13 @@
 
                 <div class="grid grid-rows-2 p-4 grow items-center">
                   <div>
-                    <a class="capitalize text-2xl font-semibold hover:text-primary" :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
-
+                    <a class="capitalize text-2xl font-semibold hover:text-primary-content" :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
                       <template v-if="item.media.title.english">
                         {{ item.media.title.english }}
                       </template>
                       <template v-if="item.media.title.english == null">
                         {{ item.media.title.romaji }}
                       </template>
-
-
                     </a>
                   </div>
                   <p>
@@ -897,7 +894,7 @@ export default {
       season: "",
       format: "",
       airing: "",
-      searchType: "ANIME",
+      searchType: "",
       showList: true,
       showPlanning: true,
       searchResult: [],
@@ -1599,6 +1596,14 @@ export default {
         }
 
         this.search.between = input.includes("between");
+
+        if (input.toLowerCase().includes("anime")) {
+          this.searchType = "ANIME"
+        }
+
+        if (input.toLowerCase().includes("manga")) {
+          this.searchType = "MANGA"
+        }
 
         if (input.toLowerCase().includes("winter")) {
           this.search.season.push("Winter")

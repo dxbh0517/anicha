@@ -1,5 +1,5 @@
 <template>
-  <div class="center w-full">
+  <div class="w-full my-10">
     <div class="hero">
       <div class="hero-content flex flex-col w-full lg:flex-row">
         <div class="flex-1 text-center lg:text-right">

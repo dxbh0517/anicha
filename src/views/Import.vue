@@ -169,7 +169,7 @@ export default {
     },
     async importChallenge() {
       let line = this.requirements.split("\n");
-      let regex = /^\s*([a-zA-Z]{2}|[0-9][0-9]?|100)\)/;
+      let regex = /^\s*([a-zA-Z]\d|[a-zA-Z]{2}|[0-9][0-9]?|100)\)/;
       let count = 0;
       let position = [];
       let number = [];

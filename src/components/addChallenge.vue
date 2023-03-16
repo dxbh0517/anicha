@@ -482,7 +482,7 @@ export default {
               comment = await result.data.ThreadComment[0].comment;
               childComments = await result.data.ThreadComment[0].childComments;
 
-              let regex = /^\s*([a-zA-Z]{2}|[0-9][0-9]?|100)\)/;
+              let regex = /^\s*([a-zA-Z]\d|[a-zA-Z]{2}|[0-9][0-9]?|100)\)/;
               let count = 0;
 
               let line = comment.split('\n')
