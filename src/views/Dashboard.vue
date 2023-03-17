@@ -47,7 +47,7 @@
       <div class="flex gap-4">
         <div class="form-control">
           <label class="label cursor-pointer">
-            <input type="checkbox" class="checkbox checkbox-primary" v-model="showCHAnimeManga"/>
+            <input type="checkbox" class="checkbox checkbox-primary bg-transparent" v-model="showCHAnimeManga"/>
             <span class="label-text mx-2">only show challenge anime/manga</span>
           </label>
         </div>
