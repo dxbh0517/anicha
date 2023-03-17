@@ -689,8 +689,8 @@
 
             <div class="form-control my-4 mx-2 w-48 items-center">
               <div class="flex items-center justify-center w-full h-full">
-                <input checked v-model="showList" id="showList" type="checkbox" value="" class="w-5 h-5 text-primary
-              bg-base-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 ">
+                <input v-model="showList" id="showList" type="checkbox" class="w-5 h-5 text-primary
+              bg-base-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
                 <label for="showList" class="ml-2 text-sm text-primary font-bold">
                   Only show my list
                 </label>
@@ -699,8 +699,8 @@
 
             <div class="form-control my-4 mx-2 w-48 items-center">
               <div class="flex items-center justify-center w-full h-full">
-                <input checked v-model="showPlanning" id="showPlanning" type="checkbox" value="" class="w-5 h-5 text-primary
-              bg-base-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 ">
+                <input v-model="showPlanning" id="showPlanning" type="checkbox" class="w-5 h-5 text-primary
+              bg-base-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2" @click="changeShowPlanning()">
                 <label for="showPlanning" class="ml-2 text-sm text-primary font-bold">
                   Only show planning
                 </label>
@@ -778,7 +778,7 @@
                   </div>
                 </div>
 
-                <div class="font-bold text-xl my-2 px-4 grid grid-cols-2">
+                <div v-if="results.mediaListEntry !== null" class="font-bold text-xl my-2 px-4 grid grid-cols-2">
                   <div class="text-left">
                     {{ results.mediaListEntry.status }}
                   </div>
@@ -1565,7 +1565,7 @@ export default {
         this.search.airing = [];
 
         this.search.showList = true;
-        this.search.showPlanning = true
+        this.search.showPlanning = true;
 
         if (output !== null) {
           output = output.map(text => text.replace(/"/g, ''));
@@ -1667,9 +1667,6 @@ export default {
       this.format = "";
       this.airing = "";
 
-      this.showList = true;
-      this.showPlanning = true
-
       this.pageNum = 1
       this.searchQuery(this.pageNum)
     },
@@ -1730,7 +1727,7 @@ export default {
         media = media + ', startDate_greater: ' + this.search.year[0] + '0000 , startDate_lesser: ' + num + '0000'
       }
 
-      media = media + ', onList: true, sort: POPULARITY_DESC)'
+      media = media + ', onList: ' + this.search.showList + ', sort: POPULARITY_DESC)'
 
 
       const query = `
@@ -1924,6 +1921,9 @@ export default {
 
       this.code = this.code + "~~~"
     },
+    changeShowPlanning() {
+      console.log(this.showPlanning)
+    }
   },
   mounted() {
     this.getUser();

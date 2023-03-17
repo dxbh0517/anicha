@@ -19,7 +19,7 @@
             </li>
           </ul>
         </div>
-        <router-link to="/" class="btn btn-ghost normal-case text-xl">Anicha</router-link>
+        <router-link to="/dashboard" class="btn btn-ghost normal-case text-xl">Anicha</router-link>
       </div>
       <div class="navbar-center hidden lg:flex" v-if="user.loggedIn">
         <ul class="menu menu-horizontal px-1">

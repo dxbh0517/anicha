@@ -19,16 +19,48 @@
       </div>
     </div>
 
+    <div class="rounded-lg bg-base-200 p-4 m-4">
+      <div class="border-b-solid border-b-primary border-b-4 px-4 py-2 m-4 lg:text-left">
+        <h1 class="text-primary font-bold text-2xl">
+          Near Completion
+        </h1>
+      </div>
+
+      <div class="m-4">
+        <template v-for="(challenge, index) in nearCompletion" v-bind:key="index">
+          <div class="relative h-max place-self-center border border-2 border-primary rounded-lg p-3 my-3">
+            <router-link :to="'/challenge/' + challenge[2]" class="font-bold text-lg">
+              {{ challenge[0] }}
+            </router-link>
+            <progress class="progress progress-primary w-full" :value="challenge[1]" max="100"></progress>
+          </div>
+        </template>
+      </div>
+    </div>
+
     <div class="flex border-solid border-b-primary border-transparent border-b-4 p-4 m-4 justify-between">
       <button class="btn btn-outline btn-primary p-2 mr-2 font-bold" @click="refresh">
         <i class="fa-solid fa-arrows-rotate"></i>
         &nbsp;&nbsp;Refresh
       </button>
 
-      <a class="btn btn-outline btn-primary p-2 mr-2 font-bold" href="#my-modal-2">
-        <i class="fa-solid fa-plus"></i>
-        &nbsp;&nbsp;Add Challenge
-      </a>
+      <div class="flex gap-4">
+        <div class="form-control">
+          <label class="label cursor-pointer">
+            <input type="checkbox" class="checkbox checkbox-primary" v-model="showCHAnimeManga"/>
+            <span class="label-text mx-2">only show challenge anime/manga</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <a class="btn btn-outline btn-primary p-2 mr-2 font-bold" href="#my-modal-2">
+            <i class="fa-solid fa-plus"></i>
+            &nbsp;&nbsp;Add Challenge
+          </a>
+        </div>
+      </div>
+
+
     </div>
 
     <div class="modal" id="my-modal-2">
@@ -46,12 +78,29 @@
           <div class="grid justify-between gap-5 m-4" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr))">
             <template v-for="item in list" v-bind:key="item">
               <template v-if="item.media.type === 'ANIME'">
-                <div class="relative w-full">
-                  <a class="w-fit h-full" :href=" 'https://anilist.co/anime/' +  item.mediaId" target="_blank">
-                    <img :src="item.media.coverImage.extraLarge" :alt="item.media.title.english"
-                         class="h-full w-auto mx-auto rounded-lg hover:scale-110">
-                  </a>
-                </div>
+                <template v-if="showCHAnimeManga === true">
+                  <template v-for="(challenge) in challengeList" v-bind:key="challenge">
+                    <template v-for="entry in challenge.fulfilments" v-bind:key="entry">
+                      <template v-if="entry == item.mediaId">
+                        <div class="relative w-full">
+                          <a class="w-fit h-full" :href=" 'https://anilist.co/anime/' +  item.mediaId" target="_blank">
+                            <img :src="item.media.coverImage.extraLarge" :alt="item.media.title.english"
+                                 class="h-full w-auto mx-auto rounded-lg hover:scale-110">
+                          </a>
+                        </div>
+                      </template>
+                    </template>
+                  </template>
+                </template>
+
+                <template v-if="showCHAnimeManga === false">
+                  <div class="relative w-full">
+                    <a class="w-fit h-full" :href=" 'https://anilist.co/anime/' +  item.mediaId" target="_blank">
+                      <img :src="item.media.coverImage.extraLarge" :alt="item.media.title.english"
+                           class="h-full w-auto mx-auto rounded-lg hover:scale-110">
+                    </a>
+                  </div>
+                </template>
               </template>
             </template>
           </div>
@@ -69,13 +118,29 @@
           <div class="grid justify-between gap-5 m-4" style="grid-template-columns: repeat(auto-fill, minmax(100px, 1fr))">
             <template v-for="item in list" v-bind:key="item">
               <template v-if="item.media.type === 'MANGA'">
+                <template v-if="showCHAnimeManga === true">
+                  <template v-for="(challenge) in challengeList" v-bind:key="challenge">
+                    <template v-for="entry in challenge.fulfilments" v-bind:key="entry">
+                      <template v-if="entry == item.mediaId">
+                        <div class="relative w-full">
+                          <a class="w-fit h-full" :href=" 'https://anilist.co/anime/' +  item.mediaId" target="_blank">
+                            <img :src="item.media.coverImage.extraLarge" :alt="item.media.title.english"
+                                 class="h-full w-auto mx-auto rounded-lg hover:scale-110">
+                          </a>
+                        </div>
+                      </template>
+                    </template>
+                  </template>
+                </template>
 
-                <div class="relative w-full">
-                  <a class="w-fit h-full" :href=" 'https://anilist.co/manga/' +  item.mediaId" target="_blank">
-                    <img :src="item.media.coverImage.extraLarge" :alt="item.media.title.english"
-                         class="h-full w-auto mx-auto rounded-lg hover:scale-110">
-                  </a>
-                </div>
+                <template v-if="showCHAnimeManga === false">
+                  <div class="relative w-full">
+                    <a class="w-fit h-full" :href=" 'https://anilist.co/manga/' +  item.mediaId" target="_blank">
+                      <img :src="item.media.coverImage.extraLarge" :alt="item.media.title.english"
+                           class="h-full w-auto mx-auto rounded-lg hover:scale-110">
+                    </a>
+                  </div>
+                </template>
               </template>
             </template>
           </div>
@@ -106,6 +171,8 @@ export default {
       challengeList: [],
       challengeIdList: [],
       progressList: [],
+      nearCompletion: [],
+      showCHAnimeManga: false
     }
   },
   methods: {
@@ -337,7 +404,13 @@ export default {
               status: "Completed",
               endDate: date
             });
-          } else {
+          }
+
+          else if (result >= 80) {
+            this.nearCompletion.push([this.challengeList[i].name, this.challengeList[i].progress, this.challengeIdList[i]])
+          }
+
+          else {
             updateDoc(ref, {
               progress: result
             });
@@ -351,6 +424,7 @@ export default {
       return s;
     },
     refresh() {
+      this.nearCompletion = [];
       setTimeout(this.getUser(), 200)
       setTimeout(this.getCurrent, 400);
       setTimeout(this.getChallengeList, 400);
