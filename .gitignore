@@ -21,3 +21,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+!/src/views/Import.vue
+!/src/views/ChallengeListView.vue
+!/src/views/ChallengeList.vue

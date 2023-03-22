@@ -5,6 +5,11 @@
         <h2 class="mb-8 text-4xl tracking-tight font-extrabold text-center text-primary">
           Contact Us
         </h2>
+
+        <div class="p-4 mb-4 text-sm rounded-lg bg-gray-800 text-blue-400" role="alert">
+          Join our <a href="https://discord.gg/Tj5BpPDrzp" target="_blank" class="underline">discord</a>!
+        </div>
+
         <form action="#" class="space-y-8">
           <div>
             <label for="email" class="block mb-2 text-sm font-medium text-gray-400">

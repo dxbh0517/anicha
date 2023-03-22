@@ -30,6 +30,16 @@
     </div>
   </div>
 
+  <div class="center z-50" v-if="loading">
+    <div class="hero h-fit w-fit bg-base-200 drop-shadow-lg rounded-lg">
+      <div class="hero-content text-center">
+        <div class="max-w-md flex">
+          Loading
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container bg-base-200 mx-auto my-8 p-4 rounded-lg">
     <div class="flex ...">
       <div class="mr-5 ml-3 grid content-center">
@@ -874,7 +884,7 @@ export default {
       add: false,
       openExtra: false,
       list: [],
-      loading: "",
+      loading: false,
       error: "",
       requirements: [],
       setToPlanning: false,
@@ -928,42 +938,48 @@ export default {
       })
     },
     async getChallenge() {
-      const docRef = doc(db, "challenges", this.id);
-      const docSnap = await getDoc(docRef)
+      this.loading = true;
+      try {
+        const docRef = doc(db, "challenges", this.id);
+        const docSnap = await getDoc(docRef)
 
-      this.name = docSnap.data().name;
-      this.header = this.header.replace(/{{ name }}/g, this.name)
-      this.postLink = docSnap.data().postLink;
-      this.imageLink = docSnap.data().imageLink;
-      this.threadLink = docSnap.data().threadLink;
-      this.type = docSnap.data().type;
-      this.ch_status = docSnap.data().status;
-      this.startDate = docSnap.data().startDate
-      this.header = this.header.replace(/{{ startDate }}/g, this.startDate)
-      this.endDate = docSnap.data().endDate
-      this.header = this.header.replace(/{{ endDate }}/g, this.endDate)
-      this.deadline = docSnap.data().deadline;
-      this.deadlineDate = docSnap.data().deadlineDate
+        this.name = docSnap.data().name;
+        this.header = this.header.replace(/{{ name }}/g, this.name)
+        this.postLink = docSnap.data().postLink;
+        this.imageLink = docSnap.data().imageLink;
+        this.threadLink = docSnap.data().threadLink;
+        this.type = docSnap.data().type;
+        this.ch_status = docSnap.data().status;
+        this.startDate = docSnap.data().startDate
+        this.header = this.header.replace(/{{ startDate }}/g, this.startDate)
+        this.endDate = docSnap.data().endDate
+        this.header = this.header.replace(/{{ endDate }}/g, this.endDate)
+        this.deadline = docSnap.data().deadline;
+        this.deadlineDate = docSnap.data().deadlineDate
 
-      this.progress = docSnap.data().progress
-      this.extra = docSnap.data().extra
+        this.progress = docSnap.data().progress
+        this.extra = docSnap.data().extra
 
-      for (let i = 0; i < docSnap.data().numbers.length; i++) {
-        this.requirements[i] = []
-        this.requirements[i][5] = docSnap.data().position[i]
-        this.requirements[i][0] = docSnap.data().numbers[i];
-        this.requirements[i][1] = docSnap.data().requirements[i];
-        this.requirements[i][2] = docSnap.data().fulfilments[i];
-        this.requirements[i][3] = docSnap.data().fulfilType[i];
-        this.requirements[i][4] = docSnap.data().notes[i]
+        for (let i = 0; i < docSnap.data().numbers.length; i++) {
+          this.requirements[i] = []
+          this.requirements[i][5] = docSnap.data().position[i]
+          this.requirements[i][0] = docSnap.data().numbers[i];
+          this.requirements[i][1] = docSnap.data().requirements[i];
+          this.requirements[i][2] = docSnap.data().fulfilments[i];
+          this.requirements[i][3] = docSnap.data().fulfilType[i];
+          this.requirements[i][4] = docSnap.data().notes[i]
+        }
+
+        this.number = this.pad(parseInt(this.requirements[this.requirements.length - 1][0]) + 1)
+        this.position = this.requirements[this.requirements.length - 1][5] + 1
+
+        if (this.requirements[0][0] != null) {
+          this.getList();
+          setTimeout(this.setProgress, 400);
+        }
       }
-
-      this.number = this.pad(parseInt(this.requirements[this.requirements.length - 1][0]) + 1)
-      this.position = this.requirements[this.requirements.length - 1][5] + 1
-
-      if (this.requirements[0][0] != null) {
-        this.getList();
-        setTimeout(this.setProgress, 400);
+      finally {
+        this.loading = false;
       }
     },
     async addRequirement() {
@@ -1243,7 +1259,7 @@ export default {
         console.error(error)
       }
     },
-    setProgress() {
+    async setProgress() {
       if (this.list.length !== 0) {
         let challengeProgress = 0;
         let challengeTotal = this.list.length;
@@ -1257,7 +1273,7 @@ export default {
             } else if (this.list[i].media.chapters != null) {
               challengeProgress = challengeProgress + Math.round(this.list[i].progress / this.list[i].media.chapters * 100) / 100
             } else {
-              challengeProgress = challengeProgress + Math.round(this.list[i].progress / (this.list[i].progress + 1) * 100 ) /100
+              challengeProgress = challengeProgress + Math.round(this.list[i].progress / (this.list[i].progress + 1) * 100) / 100
             }
           }
         }
@@ -1290,13 +1306,13 @@ export default {
 
           date = latestDate.year + "-" + this.pad(latestDate.month, 2) + "-" + this.pad(latestDate.day, 2)
 
-          updateDoc(ref, {
+          await updateDoc(ref, {
             progress: result,
             status: "Completed",
             endDate: date
           });
         } else {
-          updateDoc(ref, {
+          await updateDoc(ref, {
             progress: result
           });
         }
