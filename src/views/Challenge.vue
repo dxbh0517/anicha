@@ -960,6 +960,10 @@ export default {
         this.progress = docSnap.data().progress
         this.extra = docSnap.data().extra
 
+        if (docSnap.data().uid !== this.uid) {
+          await router.push('/dashboard')
+        }
+
         for (let i = 0; i < docSnap.data().numbers.length; i++) {
           this.requirements[i] = []
           this.requirements[i][5] = docSnap.data().position[i]
