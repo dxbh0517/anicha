@@ -59,8 +59,15 @@ const store = createStore({
                 anilistAuth: anilistAuth,
                 uid: user.uid,
                 username: anilistUsername,
-                header: "# __{{ name }}__ <br> <br> Challenge Start Date: {{ startDate }} <br> Challenge Finish Date: {{ endDate }} <br> Legend: [✓] = Completed [✗] = Not Completed <br> <hr>",
-                footer: "",
+                header: "~~~ \n" +
+                    "# __{{ name }}__\n" +
+                    "Challenge Start Date: {{ startDate }}\n" +
+                    "Challenge Finish Date: {{ endDate }}\n" +
+                    "Legend: [ {{ legendCompleted }} ] = Completed [ {{ legendNotCompleted }} ] = Not Completed\n" +
+                    "<hr>",
+                footer: "~~~",
+                legendCompleted: "✓",
+                legendNotCompleted: "✗",
             });
         },
         async logout(state) {
