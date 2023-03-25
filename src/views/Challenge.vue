@@ -912,6 +912,8 @@ export default {
       tempVal: "",
       searchEnd: false,
       code: "",
+      legendCompleted: "",
+      legendNotCompleted: "",
     }
   },
   methods: {
@@ -932,6 +934,8 @@ export default {
           this.anilistAuth = querySnapshot.docs[0].data().anilistAuth;
           this.header = querySnapshot.docs[0].data().header.toString();
           this.footer = querySnapshot.docs[0].data().footer;
+          this.legendCompleted = querySnapshot.docs[0].data().legendCompleted
+          this.legendNotCompleted = querySnapshot.docs[0].data().legendNotCompleted
 
           await this.getChallenge();
         }
@@ -1886,10 +1890,9 @@ export default {
       this.searchFields()
     },
     getCode() {
-      this.code = "~~~ \n"
-
-      this.header = this.header.replaceAll("<br>", "\n")
-      this.code = this.code + this.header + "\n"
+      this.header = this.header.replace("{{ legendCompleted }}", this.legendCompleted)
+      this.header = this.header.replace("{{ legendNotCompleted }}", this.legendNotCompleted)
+      this.code = this.header + "\n"
 
       for (let i = 0; i < this.requirements.length; i++) {
         if (this.requirements[i][3] !== 'divider') {
@@ -1898,9 +1901,9 @@ export default {
               this.code = this.code + this.pad(this.requirements[i][0])
                   + ") ["
               if (this.list[j].status === 'COMPLETED') {
-                this.code = this.code + "✓"
+                this.code = this.code + this.legendCompleted
               } else {
-                this.code = this.code + "✗"
+                this.code = this.code + this.legendNotCompleted
               }
 
               this.code = this.code + "] __" + this.requirements[i][1]
@@ -1938,8 +1941,6 @@ export default {
       if (this.footer !== '') {
         this.code = this.code + this.footer + "\n"
       }
-
-      this.code = this.code + "~~~"
     },
     changeShowPlanning() {
       console.log(this.showPlanning)

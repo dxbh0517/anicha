@@ -17,6 +17,12 @@
                 Challenges
               </router-link>
             </li>
+
+            <li>
+              <router-link class="colorIt" to="/settings">
+                Settings
+              </router-link>
+            </li>
           </ul>
         </div>
         <router-link to="/dashboard" class="btn btn-ghost normal-case text-xl">Anicha</router-link>
@@ -31,6 +37,11 @@
           <li>
             <router-link class="colorIt" to="/challenges">
               Challenges
+            </router-link>
+          </li>
+          <li>
+            <router-link class="colorIt" to="/settings">
+              Settings
             </router-link>
           </li>
         </ul>
