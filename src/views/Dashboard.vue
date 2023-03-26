@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <div class="rounded-lg bg-base-200 p-4 m-4" v-if="nearCompletion !== []">
+    <div class="rounded-lg bg-base-200 p-4 m-4" v-if="nearCompletion.length !== 0">
       <div class="border-b-solid border-b-primary border-b-4 px-4 py-2 m-4 lg:text-left">
         <h1 class="text-primary font-bold text-2xl">
           Near Completion
