@@ -363,9 +363,7 @@
   <div class="container mx-auto my-8 p-4 rounded-lg bg-base-200">
     <template v-for="(entry, index) in requirements" v-bind:key="entry">
       <template v-if="entry[3] !== 'divider'">
-        <template v-for="item in list" v-bind:key="item">
-          <template v-if="item.mediaId == entry[2]">
-            <div class="border-2 border-primary rounded-lg my-4 group bg-gradient-to-r via-base-200" :class="{ 'from-primary ': item.status === 'COMPLETED', 'from-[#3db4f2] ': item.status === 'CURRENT', 'from-[#f79a63] ': item.status === 'PLANNING' }">
+            <div class="border-2 border-primary rounded-lg my-4 group bg-gradient-to-r via-base-200" :class="{ 'from-primary ': entry[9] === 'COMPLETED', 'from-[#3db4f2] ': entry[9] === 'CURRENT', 'from-[#f79a63] ': entry[9] === 'PLANNING' }">
               <div :id="index" class="p-4 flex">
                 <div class="flex border-r-2 border-r-primary-content px-2 items-center">
                   <p class="text-lg font-bold text-primary-content">
@@ -374,23 +372,21 @@
                 </div>
 
                 <div class="flex-none px-4">
-
                   <div class="flex items-center min-h-full">
                     <a :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
-                      <img :src="item.media.coverImage.extraLarge" class="h-32 rounded-lg">
+                      <img :src="entry[6]" class="h-32 rounded-lg">
                     </a>
                   </div>
-
                 </div>
 
                 <div class="grid grid-rows-2 p-4 grow items-center">
                   <div>
                     <a class="capitalize text-2xl font-semibold hover:text-primary-content" :href="'https://anilist.co/' + entry[3].toLowerCase() + '/' + entry[2]">
-                      <template v-if="item.media.title.english">
-                        {{ item.media.title.english }}
+                      <template v-if="entry[7]">
+                        {{ entry[7] }}
                       </template>
-                      <template v-if="item.media.title.english == null">
-                        {{ item.media.title.romaji }}
+                      <template v-if="entry[7] == null">
+                        {{ entry[8] }}
                       </template>
                     </a>
                   </div>
@@ -506,8 +502,6 @@
                 </div>
               </form>
             </div>
-          </template>
-        </template>
       </template>
 
       <template v-if="entry[3] === 'divider'">
@@ -1051,7 +1045,7 @@ export default {
       this.list = [];
 
       for (let i = 0; i < this.requirements.length; i++) {
-        if (this.requirements[i][3] !== "divider") {
+        if (this.requirements[i][3] !== "divider" && this.requirements[i][2] !== "" && this.requirements[i][2] !== "00000") {
           chID.push(this.requirements[i][2])
         }
       }
@@ -1134,6 +1128,18 @@ export default {
                   this.list[j].startedAt.month = this.pad(this.list[j].startedAt.month, 2);
                 }
               }
+
+              for (let j = 0; j < this.requirements.length; j++) {
+                for (let k = 0; k < this.list.length; k++) {
+                  if (parseInt(this.requirements[j][2]) === this.list[k].mediaId) {
+                    this.requirements[j][6] = this.list[k].media.coverImage.extraLarge;
+                    this.requirements[j][7] = this.list[k].media.title.english;
+                    this.requirements[j][8] = this.list[k].media.title.romaji;
+                    this.requirements[j][9] = this.list[k].status;
+                    break;
+                  }
+                }
+              }
             })
             .catch(handleError);
 
@@ -1147,6 +1153,18 @@ export default {
         // eslint-disable-next-line no-inner-declarations
         function handleError(error) {
           console.error(error)
+        }
+      }
+
+      console.log(this.list)
+      console.log(this.requirements)
+
+      for (let i = 0; i < this.requirements.length; i++) {
+        // loop over list to find a match
+        for (let j = 0; j < this.list.length; j++) {
+          if (this.requirements[i][2] === this.list[j].mediaId) {
+            console.log("match")
+          }
         }
       }
     },
