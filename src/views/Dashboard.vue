@@ -411,13 +411,12 @@ export default {
 
       for (let i = 0; i < this.challengeList.length; i ++) {
         challengeProgress = 0;
-        challengeTotal = 0;
+        challengeTotal = this.challengeList[i].fulfilments.length;
 
         for (let j = 0; j < this.challengeList[i].fulfilments.length; j++) {
           for (let k = 0; k < this.progressList.length; k++) {
-            if (this.progressList[k].mediaId == this.challengeList[i].fulfilments[j]) {
+            if (this.progressList[k].mediaId == parseInt(this.challengeList[i].fulfilments[j])) {
               list.push(this.progressList[k])
-              challengeTotal++;
               if (this.progressList[k].status === "COMPLETED") {
                 challengeProgress++
               } else {
