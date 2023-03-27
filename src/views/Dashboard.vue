@@ -411,7 +411,13 @@ export default {
 
       for (let i = 0; i < this.challengeList.length; i ++) {
         challengeProgress = 0;
-        challengeTotal = this.challengeList[i].fulfilments.length;
+        let count = 0;
+        for (let j = 0; j < this.challengeList[i].fulfilments.length; j++) {
+          if (this.challengeList[i].fulfilments[j] !== ""){
+            count++
+          }
+        }
+        challengeTotal = count;
 
         for (let j = 0; j < this.challengeList[i].fulfilments.length; j++) {
           for (let k = 0; k < this.progressList.length; k++) {

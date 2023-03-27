@@ -1156,9 +1156,6 @@ export default {
         }
       }
 
-      console.log(this.list)
-      console.log(this.requirements)
-
       for (let i = 0; i < this.requirements.length; i++) {
         // loop over list to find a match
         for (let j = 0; j < this.list.length; j++) {
@@ -1288,7 +1285,13 @@ export default {
     async setProgress() {
       if (this.list.length !== 0) {
         let challengeProgress = 0;
-        let challengeTotal = this.list.length;
+        let count = 0;
+        for (let i = 0; i < this.requirements.length; i++) {
+          if (this.requirements[i][3] !== "divider"){
+            count++
+          }
+        }
+        let challengeTotal = count;
 
         for (let i = 0; i < this.list.length; i++) {
           if (this.list[i].status === "COMPLETED") {
